@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-controlpro}
+      POSTGRES_USER: ${POSTGRES_USER:-controlpro}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-controlpro_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-controlpro} -d ${POSTGRES_DB:-controlpro}"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-controlpro}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-controlpro_dev}
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 8s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+  project-service:
+    build: ./apps/project-service
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-controlpro}:${POSTGRES_PASSWORD:-controlpro_dev}@postgres:5432/${POSTGRES_DB:-controlpro}
+      REDIS_URL: redis://redis:6379
+      AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER:-controlpro}:${RABBITMQ_DEFAULT_PASS:-controlpro_dev}@rabbitmq:5672
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  alert-function:
+    build: ./apps/alert-function
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-controlpro}:${POSTGRES_PASSWORD:-controlpro_dev}@postgres:5432/${POSTGRES_DB:-controlpro}
+      AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER:-controlpro}:${RABBITMQ_DEFAULT_PASS:-controlpro_dev}@rabbitmq:5672
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api-gateway:
+    build: ./apps/api-gateway
+    environment:
+      PORT: 3000
+      PROJECT_SERVICE_URL: http://project-service:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - project-service
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+

@@ -1,0 +1,19 @@
+{
+  "name": "controlpro-distributed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ecosistema académico de tres aplicaciones para seguimiento de proyectos.",
+  "workspaces": [
+    "apps/api-gateway",
+    "apps/project-service",
+    "apps/alert-function"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "check": "node --check apps/api-gateway/src/index.js && node --check apps/project-service/src/index.js && node --check apps/alert-function/src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+
