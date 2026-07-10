@@ -42,7 +42,9 @@ Los diagramas C4 y de despliegue están en `docs/architecture.md`.
 - [Informe de arquitectura](docs/deliverables/Angulo_Carlos_ControlPro_Arquitectura_Distribuida.pdf)
 - [Presentación para clase](docs/deliverables/Angulo_Carlos_ControlPro_Presentacion.pptx)
 - [Blueprint editable](docs/deliverables/ControlPro_Academico_Blueprint_v1.drawio)
+- [Blueprint final de arquitectura y flujo](docs/deliverables/ControlPro_Academico_Blueprint_Final.drawio)
 - [Guion de exposición](docs/deliverables/Guion_Exposicion_ControlPro.md)
+- [Guion para explicar el blueprint](docs/deliverables/Guion_Blueprint_ControlPro.md)
 
 ## Estado verificado
 
