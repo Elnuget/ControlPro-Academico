@@ -44,6 +44,20 @@ function renderKpis() {
   $('#notificationCount').textContent = state.notifications.length;
   $('#nextDeadline').textContent = upcoming ? formatDate(upcoming.deadline) : '—';
   $('#nextProject').textContent = upcoming ? upcoming.name : 'sin proyectos';
+  renderSteps();
+}
+
+function renderSteps() {
+  const states = {
+    stepProject: state.projects.length > 0,
+    stepProgress: state.projects.some(project => Number(project.progress) > 0),
+    stepActivity: state.notifications.length > 0
+  };
+  Object.entries(states).forEach(([id, complete]) => {
+    document.getElementById(id).classList.toggle('done', complete);
+  });
+  const projectAction = $('#stepProject [data-action="create-project"]');
+  projectAction.textContent = states.stepProject ? 'Proyecto creado' : 'Crear ahora';
 }
 
 function renderProjects() {
@@ -102,6 +116,7 @@ async function loadDashboard(showSuccess = false) {
 }
 
 document.addEventListener('click', event => {
+  if (event.target.closest('[data-action="create-project"]')) openProjectDialog();
   const progressButton = event.target.closest('[data-progress-id]');
   if (progressButton) {
     const project = state.projects.find(item => item.id === progressButton.dataset.progressId);
@@ -156,11 +171,14 @@ $('#projectForm').addEventListener('submit', async event => {
   } catch (error) { showToast(error.message, true); }
 });
 
-$('#newProjectButton').addEventListener('click', () => {
+function openProjectDialog() {
   const date = new Date(); date.setDate(date.getDate() + 14);
   $('#projectDeadline').value = date.toISOString().slice(0, 10);
   $('#projectDialog').showModal();
-});
+}
+
+$('#newProjectButton').addEventListener('click', openProjectDialog);
+$('#heroNewProjectButton').addEventListener('click', openProjectDialog);
 $('#refreshButton').addEventListener('click', () => loadDashboard(true));
 
 loadDashboard();

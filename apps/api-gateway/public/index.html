@@ -16,16 +16,16 @@
       </a>
 
       <nav class="nav" aria-label="Navegación principal">
-        <a class="active" href="#resumen"><span>▦</span> Resumen</a>
-        <a href="#proyectos"><span>◫</span> Proyectos</a>
-        <a href="#arquitectura"><span>⌘</span> Arquitectura</a>
-        <a href="#operacion"><span>◉</span> Operación</a>
+        <a class="active" href="#resumen"><span>⌂</span> Inicio</a>
+        <a href="#proyectos"><span>✓</span> Primeros pasos</a>
+        <a href="#lista-proyectos"><span>◫</span> Mis proyectos</a>
+        <a href="#actividad"><span>◉</span> Actividad</a>
       </nav>
 
       <div class="sidebar-card">
-        <span class="eyebrow">Arquitectura</span>
-        <strong>3 aplicaciones</strong>
-        <p>REST + AMQP · Docker</p>
+        <span class="eyebrow">EMPIEZA AQUÍ</span>
+        <strong>Completa 3 pasos</strong>
+        <p>Crea, actualiza y revisa tu proyecto.</p>
       </div>
 
       <div class="sidebar-footer">
@@ -37,30 +37,59 @@
     <main class="main">
       <header class="topbar">
         <div>
-          <p class="breadcrumb">Diseño y Arquitectura de Software</p>
-          <h1>Panel de seguimiento</h1>
+          <p class="breadcrumb">ControlPro Académico</p>
+          <h1>Hola, Carlos</h1>
         </div>
         <div class="top-actions">
           <span class="status-pill" id="systemStatus"><i></i> Verificando sistema</span>
-          <a class="ghost-button" href="/docs" target="_blank" rel="noreferrer">Abrir Swagger ↗</a>
           <button class="primary-button" id="newProjectButton">+ Nuevo proyecto</button>
         </div>
       </header>
 
       <section id="resumen" class="hero">
         <div>
-          <span class="eyebrow teal">CONTROLPRO ACADÉMICO</span>
-          <h2>Todo el avance del proyecto,<br><em>en un solo lugar.</em></h2>
-          <p>Proyectos, evidencias y alertas conectados mediante una arquitectura distribuida y verificable.</p>
+          <span class="eyebrow teal">TU ESPACIO DE TRABAJO</span>
+          <h2>Organiza tus entregas<br><em>sin perder el hilo.</em></h2>
+          <p>Crea un proyecto, registra cada avance y consulta tu actividad desde un panel sencillo.</p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#proyectos">Empezar ahora</a>
+            <button class="secondary-button" id="heroNewProjectButton">Crear proyecto</button>
+          </div>
         </div>
-        <div class="hero-flow" aria-label="Flujo de arquitectura">
-          <span>Cliente</span><b>→</b><span>Gateway</span><b>→</b><span>Servicio</span><b>⇢</b><span>Función</span>
+        <div class="hero-summary" aria-label="Resumen de uso">
+          <span><b>1</b> Crea</span><i></i>
+          <span><b>2</b> Actualiza</span><i></i>
+          <span><b>3</b> Revisa</span>
+        </div>
+      </section>
+
+      <section id="proyectos" class="panel steps-panel">
+        <div class="steps-header">
+          <div><span class="eyebrow">PRIMEROS PASOS</span><h3>Comienza a usar ControlPro</h3></div>
+          <p>Sigue este recorrido para mantener tu trabajo al día.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card" id="stepProject">
+            <span class="step-number">1</span>
+            <div><strong>Crea tu proyecto</strong><p>Agrega el nombre, la materia y la fecha de entrega.</p></div>
+            <button data-action="create-project">Crear ahora</button>
+          </article>
+          <article class="step-card" id="stepProgress">
+            <span class="step-number">2</span>
+            <div><strong>Registra un avance</strong><p>Indica el porcentaje y escribe qué completaste.</p></div>
+            <a href="#lista-proyectos">Ir a proyectos</a>
+          </article>
+          <article class="step-card" id="stepActivity">
+            <span class="step-number">3</span>
+            <div><strong>Revisa la actividad</strong><p>Comprueba que tu avance quedó registrado.</p></div>
+            <a href="#actividad">Ver actividad</a>
+          </article>
         </div>
       </section>
 
       <section class="kpi-grid" aria-label="Indicadores">
         <article class="kpi navy">
-          <span>Proyectos activos</span>
+          <span>Mis proyectos activos</span>
           <strong id="projectCount">—</strong>
           <small>seguimiento centralizado</small>
         </article>
@@ -77,14 +106,14 @@
         <article class="kpi light-card">
           <span>Alertas procesadas</span>
           <strong id="notificationCount">—</strong>
-          <small>por Alert Function</small>
+          <small>actualizaciones registradas</small>
         </article>
       </section>
 
-      <section id="proyectos" class="content-grid">
+      <section id="lista-proyectos" class="content-grid">
         <article class="panel projects-panel">
           <div class="panel-heading">
-            <div><span class="eyebrow">PROYECTOS</span><h3>Seguimiento académico</h3></div>
+            <div><span class="eyebrow">MIS PROYECTOS</span><h3>Entregas y avances</h3></div>
             <button class="text-button" id="refreshButton">Actualizar ↻</button>
           </div>
           <div id="projectsList" class="projects-list">
@@ -92,9 +121,9 @@
           </div>
         </article>
 
-        <article class="panel alerts-panel">
+        <article id="actividad" class="panel alerts-panel">
           <div class="panel-heading">
-            <div><span class="eyebrow">EVENTOS</span><h3>Actividad reciente</h3></div>
+            <div><span class="eyebrow">ACTIVIDAD</span><h3>Últimas actualizaciones</h3></div>
             <span class="live-dot">EN VIVO</span>
           </div>
           <div id="notificationsList" class="notifications-list">
@@ -103,48 +132,10 @@
         </article>
       </section>
 
-      <section id="arquitectura" class="panel architecture-panel">
-        <div class="panel-heading">
-          <div><span class="eyebrow">C4 · CONTENEDORES</span><h3>Cómo se conectan las tres aplicaciones</h3></div>
-          <span class="architecture-tag">Event-Driven</span>
-        </div>
-        <div class="architecture-map">
-          <div class="arch-node client-node"><small>CANAL</small><strong>Cliente Web</strong><span>Panel / Swagger</span></div>
-          <div class="arrow"><span>REST</span>→</div>
-          <div class="arch-node gateway-node"><small>APP 01</small><strong>API Gateway</strong><span>:3000 · OpenAPI</span></div>
-          <div class="arrow"><span>REST</span>→</div>
-          <div class="arch-node service-node"><small>APP 02</small><strong>Project Service</strong><span>Dominio · caché</span></div>
-          <div class="arrow event-arrow"><span>AMQP</span>⇢</div>
-          <div class="arch-node function-node"><small>APP 03</small><strong>Alert Function</strong><span>Consumidor reactivo</span></div>
-        </div>
-        <div class="infra-row">
-          <span>PostgreSQL <b>consistencia</b></span>
-          <span>Redis <b>cache-aside</b></span>
-          <span>RabbitMQ <b>cola durable</b></span>
-          <span>Docker <b>6 contenedores</b></span>
-        </div>
-      </section>
-
-      <section id="operacion" class="operation-grid">
-        <article class="panel operation-card">
-          <span class="eyebrow">DOCUMENTACIÓN</span>
-          <h3>Swagger / OpenAPI</h3>
-          <p>Prueba cada endpoint desde una interfaz interactiva.</p>
-          <a href="/docs" target="_blank" rel="noreferrer">http://localhost:3000/docs ↗</a>
-        </article>
-        <article class="panel operation-card">
-          <span class="eyebrow">MENSAJERÍA</span>
-          <h3>RabbitMQ Management</h3>
-          <p>Inspecciona exchange, cola, mensajes y consumidores.</p>
-          <a href="http://localhost:15672" target="_blank" rel="noreferrer">http://localhost:15672 ↗</a>
-        </article>
-        <article class="panel operation-card">
-          <span class="eyebrow">REPOSITORIO</span>
-          <h3>Código y CI/CD</h3>
-          <p>Tres aplicaciones, Docker, pruebas e informe académico.</p>
-          <a href="https://github.com/Elnuget/ControlPro-Academico" target="_blank" rel="noreferrer">Abrir GitHub ↗</a>
-        </article>
-      </section>
+      <footer class="app-footer">
+        <span>ControlPro Académico · Tu trabajo guardado y organizado.</span>
+        <a href="/docs" target="_blank" rel="noreferrer">Documentación de la API</a>
+      </footer>
     </main>
   </div>
 
@@ -173,7 +164,7 @@
       <button type="button" class="modal-close" data-close="projectDialog" aria-label="Cerrar">×</button>
       <span class="eyebrow">NUEVO REGISTRO</span>
       <h3>Crear proyecto académico</h3>
-      <label>Nombre<input id="projectName" required placeholder="Proyecto de arquitectura"></label>
+      <label>Nombre<input id="projectName" required placeholder="Proyecto de la materia"></label>
       <label>Materia<input id="projectSubject" required value="Diseño y Arquitectura de Software"></label>
       <label>Fecha límite<input id="projectDeadline" type="date" required></label>
       <div class="modal-actions">
