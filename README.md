@@ -35,3 +35,18 @@ docker compose config --quiet
 ```
 
 Los diagramas C4 y de despliegue están en `docs/architecture.md`.
+
+## Entregables académicos
+
+- [Informe de arquitectura](docs/deliverables/Angulo_Carlos_ControlPro_Arquitectura_Distribuida.pdf)
+- [Presentación para clase](docs/deliverables/Angulo_Carlos_ControlPro_Presentacion.pptx)
+- [Blueprint editable](docs/deliverables/ControlPro_Academico_Blueprint_v1.drawio)
+- [Guion de exposición](docs/deliverables/Guion_Exposicion_ControlPro.md)
+
+## Estado verificado
+
+- 4 pruebas unitarias aprobadas.
+- 3 aplicaciones construidas como imágenes Docker.
+- 6 contenedores ejecutados en la prueba integral.
+- Evento `progress.recorded` consumido y convertido en notificación.
+- Auditoría NPM sin vulnerabilidades reportadas al momento de la entrega.
