@@ -28,7 +28,7 @@ if ($progress.event.status -ne 'published') { throw 'El evento no fue publicado'
 $notification = $null
 for ($i = 0; $i -lt 10; $i++) {
     Start-Sleep -Seconds 1
-    $items = @(Invoke-RestMethod "$base/api/notifications")
+    $items = Invoke-RestMethod "$base/api/notifications"
     $notification = $items | Where-Object { $_.event_id -eq $progress.event.eventId } | Select-Object -First 1
     if ($notification) { break }
 }

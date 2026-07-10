@@ -10,10 +10,9 @@
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
-    "check": "node --check apps/api-gateway/src/index.js && node --check apps/project-service/src/index.js && node --check apps/alert-function/src/index.js"
+    "check": "node --check apps/api-gateway/src/index.js && node --check apps/api-gateway/public/app.js && node --check apps/project-service/src/index.js && node --check apps/alert-function/src/index.js"
   },
   "engines": {
     "node": ">=20"
   }
 }
-

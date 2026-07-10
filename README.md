@@ -13,6 +13,7 @@ docker compose up --build -d
 powershell -ExecutionPolicy Bypass -File scripts\smoke-test.ps1
 ```
 
+- Dashboard visual: <http://localhost:3000>
 - Swagger: <http://localhost:3000/docs>
 - API: <http://localhost:3000/api/projects>
 - RabbitMQ Management: <http://localhost:15672>

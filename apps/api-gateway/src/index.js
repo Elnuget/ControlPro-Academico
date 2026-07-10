@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
@@ -7,6 +8,7 @@ import { openapi } from './swagger.js';
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const projectServiceUrl = process.env.PROJECT_SERVICE_URL || 'http://localhost:3001';
+const publicDir = fileURLToPath(new URL('../public', import.meta.url));
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '256kb' }));
@@ -17,6 +19,7 @@ app.use((req, res, next) => {
 });
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi, { customSiteTitle: 'ControlPro Swagger' }));
 app.get('/openapi.json', (_req, res) => res.json(openapi));
+app.use(express.static(publicDir));
 
 async function forward(req, res, internalPath) {
   const controller = new AbortController();
@@ -48,4 +51,3 @@ app.get('/api/notifications', (req, res) => forward(req, res, '/notifications'))
 app.use((req, res) => res.status(404).json({ error: 'route_not_found', path: req.path }));
 
 app.listen(port, () => console.log(JSON.stringify({ service: 'api-gateway', port, docs: '/docs' })));
-

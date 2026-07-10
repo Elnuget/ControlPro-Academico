@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Panel visual de ControlPro Académico">
+  <title>ControlPro Académico</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#resumen" aria-label="ControlPro Académico">
+        <span class="brand-mark">CP</span>
+        <span><strong>ControlPro</strong><small>Académico</small></span>
+      </a>
+
+      <nav class="nav" aria-label="Navegación principal">
+        <a class="active" href="#resumen"><span>▦</span> Resumen</a>
+        <a href="#proyectos"><span>◫</span> Proyectos</a>
+        <a href="#arquitectura"><span>⌘</span> Arquitectura</a>
+        <a href="#operacion"><span>◉</span> Operación</a>
+      </nav>
+
+      <div class="sidebar-card">
+        <span class="eyebrow">Arquitectura</span>
+        <strong>3 aplicaciones</strong>
+        <p>REST + AMQP · Docker</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <span>Carlos Angulo</span>
+        <small>ISWZ2202 · 2026</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="breadcrumb">Diseño y Arquitectura de Software</p>
+          <h1>Panel de seguimiento</h1>
+        </div>
+        <div class="top-actions">
+          <span class="status-pill" id="systemStatus"><i></i> Verificando sistema</span>
+          <a class="ghost-button" href="/docs" target="_blank" rel="noreferrer">Abrir Swagger ↗</a>
+          <button class="primary-button" id="newProjectButton">+ Nuevo proyecto</button>
+        </div>
+      </header>
+
+      <section id="resumen" class="hero">
+        <div>
+          <span class="eyebrow teal">CONTROLPRO ACADÉMICO</span>
+          <h2>Todo el avance del proyecto,<br><em>en un solo lugar.</em></h2>
+          <p>Proyectos, evidencias y alertas conectados mediante una arquitectura distribuida y verificable.</p>
+        </div>
+        <div class="hero-flow" aria-label="Flujo de arquitectura">
+          <span>Cliente</span><b>→</b><span>Gateway</span><b>→</b><span>Servicio</span><b>⇢</b><span>Función</span>
+        </div>
+      </section>
+
+      <section class="kpi-grid" aria-label="Indicadores">
+        <article class="kpi navy">
+          <span>Proyectos activos</span>
+          <strong id="projectCount">—</strong>
+          <small>seguimiento centralizado</small>
+        </article>
+        <article class="kpi teal-card">
+          <span>Avance promedio</span>
+          <strong id="averageProgress">—</strong>
+          <small>calculado en tiempo real</small>
+        </article>
+        <article class="kpi light-card">
+          <span>Próximo vencimiento</span>
+          <strong id="nextDeadline">—</strong>
+          <small id="nextProject">sin proyectos</small>
+        </article>
+        <article class="kpi light-card">
+          <span>Alertas procesadas</span>
+          <strong id="notificationCount">—</strong>
+          <small>por Alert Function</small>
+        </article>
+      </section>
+
+      <section id="proyectos" class="content-grid">
+        <article class="panel projects-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">PROYECTOS</span><h3>Seguimiento académico</h3></div>
+            <button class="text-button" id="refreshButton">Actualizar ↻</button>
+          </div>
+          <div id="projectsList" class="projects-list">
+            <div class="skeleton"></div><div class="skeleton"></div>
+          </div>
+        </article>
+
+        <article class="panel alerts-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">EVENTOS</span><h3>Actividad reciente</h3></div>
+            <span class="live-dot">EN VIVO</span>
+          </div>
+          <div id="notificationsList" class="notifications-list">
+            <div class="empty-state">Esperando eventos…</div>
+          </div>
+        </article>
+      </section>
+
+      <section id="arquitectura" class="panel architecture-panel">
+        <div class="panel-heading">
+          <div><span class="eyebrow">C4 · CONTENEDORES</span><h3>Cómo se conectan las tres aplicaciones</h3></div>
+          <span class="architecture-tag">Event-Driven</span>
+        </div>
+        <div class="architecture-map">
+          <div class="arch-node client-node"><small>CANAL</small><strong>Cliente Web</strong><span>Panel / Swagger</span></div>
+          <div class="arrow"><span>REST</span>→</div>
+          <div class="arch-node gateway-node"><small>APP 01</small><strong>API Gateway</strong><span>:3000 · OpenAPI</span></div>
+          <div class="arrow"><span>REST</span>→</div>
+          <div class="arch-node service-node"><small>APP 02</small><strong>Project Service</strong><span>Dominio · caché</span></div>
+          <div class="arrow event-arrow"><span>AMQP</span>⇢</div>
+          <div class="arch-node function-node"><small>APP 03</small><strong>Alert Function</strong><span>Consumidor reactivo</span></div>
+        </div>
+        <div class="infra-row">
+          <span>PostgreSQL <b>consistencia</b></span>
+          <span>Redis <b>cache-aside</b></span>
+          <span>RabbitMQ <b>cola durable</b></span>
+          <span>Docker <b>6 contenedores</b></span>
+        </div>
+      </section>
+
+      <section id="operacion" class="operation-grid">
+        <article class="panel operation-card">
+          <span class="eyebrow">DOCUMENTACIÓN</span>
+          <h3>Swagger / OpenAPI</h3>
+          <p>Prueba cada endpoint desde una interfaz interactiva.</p>
+          <a href="/docs" target="_blank" rel="noreferrer">http://localhost:3000/docs ↗</a>
+        </article>
+        <article class="panel operation-card">
+          <span class="eyebrow">MENSAJERÍA</span>
+          <h3>RabbitMQ Management</h3>
+          <p>Inspecciona exchange, cola, mensajes y consumidores.</p>
+          <a href="http://localhost:15672" target="_blank" rel="noreferrer">http://localhost:15672 ↗</a>
+        </article>
+        <article class="panel operation-card">
+          <span class="eyebrow">REPOSITORIO</span>
+          <h3>Código y CI/CD</h3>
+          <p>Tres aplicaciones, Docker, pruebas e informe académico.</p>
+          <a href="https://github.com/Elnuget/ControlPro-Academico" target="_blank" rel="noreferrer">Abrir GitHub ↗</a>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="progressDialog" class="modal">
+    <form id="progressForm" method="dialog">
+      <button type="button" class="modal-close" data-close="progressDialog" aria-label="Cerrar">×</button>
+      <span class="eyebrow">REGISTRAR EVIDENCIA</span>
+      <h3>Actualizar avance</h3>
+      <p id="progressProjectName" class="modal-subtitle"></p>
+      <input type="hidden" id="progressProjectId">
+      <label>Porcentaje de avance <output id="percentageOutput">70%</output>
+        <input id="percentage" type="range" min="0" max="100" value="70">
+      </label>
+      <label>Evidencia
+        <textarea id="evidence" rows="4" required>Diagramas C4 y documentación técnica completados.</textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="ghost-button" data-close="progressDialog">Cancelar</button>
+        <button type="submit" class="primary-button">Publicar avance</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="projectDialog" class="modal">
+    <form id="projectForm" method="dialog">
+      <button type="button" class="modal-close" data-close="projectDialog" aria-label="Cerrar">×</button>
+      <span class="eyebrow">NUEVO REGISTRO</span>
+      <h3>Crear proyecto académico</h3>
+      <label>Nombre<input id="projectName" required placeholder="Proyecto de arquitectura"></label>
+      <label>Materia<input id="projectSubject" required value="Diseño y Arquitectura de Software"></label>
+      <label>Fecha límite<input id="projectDeadline" type="date" required></label>
+      <div class="modal-actions">
+        <button type="button" class="ghost-button" data-close="projectDialog">Cancelar</button>
+        <button type="submit" class="primary-button">Crear proyecto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
