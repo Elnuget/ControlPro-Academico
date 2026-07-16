@@ -12,7 +12,7 @@ for ($i = 0; $i -lt 20; $i++) {
 }
 if (-not $health -or $health.status -ne 'ok') { throw 'Gateway no saludable después de 20 segundos' }
 
-$projects = @(Invoke-RestMethod "$base/api/projects")
+$projects = Invoke-RestMethod "$base/api/projects"
 if ($projects.Count -lt 1) { throw 'No se encontró el proyecto inicial' }
 $projectId = $projects[0].id
 
