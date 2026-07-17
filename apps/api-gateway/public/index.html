@@ -8,7 +8,44 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="app-shell">
+  <section id="loginScreen" class="login-screen">
+    <div class="login-showcase">
+      <a class="brand login-brand" href="/" aria-label="ControlPro Académico">
+        <span class="brand-mark">CP</span>
+        <span><strong>ControlPro</strong><small>Académico</small></span>
+      </a>
+      <div class="login-copy">
+        <span class="eyebrow teal">GESTIÓN ACADÉMICA SEGURA</span>
+        <h1>Tu progreso,<br><em>bajo control.</em></h1>
+        <p>Centraliza proyectos, registra evidencias y recibe alertas sin perder el hilo de tus entregas.</p>
+        <div class="login-benefits">
+          <span><i>✓</i> Acceso protegido</span>
+          <span><i>✓</i> Avances en tiempo real</span>
+          <span><i>✓</i> Historial centralizado</span>
+        </div>
+      </div>
+      <small class="login-course">ISWZ2202 · Diseño y Arquitectura de Software</small>
+    </div>
+    <div class="login-panel">
+      <form id="loginForm" class="login-form">
+        <div class="mobile-login-brand"><span class="brand-mark">CP</span><strong>ControlPro</strong></div>
+        <span class="eyebrow">BIENVENIDO DE NUEVO</span>
+        <h2>Inicia sesión</h2>
+        <p>Ingresa con tu cuenta académica para continuar.</p>
+        <label>Correo institucional
+          <span class="input-shell"><span aria-hidden="true">@</span><input id="loginEmail" type="email" autocomplete="username" value="carlos.angulo@udla.edu.ec" required></span>
+        </label>
+        <label>Contraseña
+          <span class="input-shell"><span aria-hidden="true">●</span><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" required><button id="togglePassword" type="button" aria-label="Mostrar contraseña">Ver</button></span>
+        </label>
+        <div id="loginError" class="login-error" role="alert" hidden></div>
+        <button id="loginButton" class="primary-button login-button" type="submit">Ingresar a ControlPro <span>→</span></button>
+        <div class="demo-access"><span>Acceso de demostración</span><code>ControlPro2026!</code></div>
+      </form>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell" hidden>
     <aside class="sidebar">
       <a class="brand" href="#resumen" aria-label="ControlPro Académico">
         <span class="brand-mark">CP</span>
@@ -29,7 +66,7 @@
       </div>
 
       <div class="sidebar-footer">
-        <span>Carlos Angulo</span>
+        <span id="sidebarUserName">Carlos Angulo</span>
         <small>ISWZ2202 · 2026</small>
       </div>
     </aside>
@@ -43,6 +80,14 @@
         <div class="top-actions">
           <span class="status-pill" id="systemStatus"><i></i> Verificando sistema</span>
           <button class="primary-button" id="newProjectButton">+ Nuevo proyecto</button>
+          <div class="user-menu">
+            <button id="userMenuButton" class="user-button" type="button" aria-expanded="false"><span id="userInitials">CA</span><b id="topUserName">Carlos</b><i>⌄</i></button>
+            <div id="userDropdown" class="user-dropdown" hidden>
+              <strong id="dropdownUserName">Carlos Angulo</strong>
+              <small id="dropdownUserEmail">carlos.angulo@udla.edu.ec</small>
+              <button id="logoutButton" type="button">Cerrar sesión</button>
+            </div>
+          </div>
         </div>
       </header>
 

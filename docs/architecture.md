@@ -14,13 +14,14 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  cliente[Swagger / cliente web] -->|REST JSON| gateway[API Gateway :3000]
+  cliente[Dashboard autenticado / Swagger] -->|REST JSON + Bearer JWT| gateway[API Gateway :3000]
   gateway -->|REST interno| projects[Project Service :3001]
-  projects --> postgres[(PostgreSQL)]
+  projects -->|valida usuario scrypt| mysql
+  projects --> mysql[(MySQL / MariaDB en XAMPP)]
   projects --> redis[(Redis cache)]
   projects -->|progress.recorded| rabbit[(RabbitMQ)]
   rabbit --> alerts[Alert Function]
-  alerts --> postgres
+  alerts --> mysql
 ```
 
 ## C4 — Componentes
@@ -28,7 +29,7 @@ flowchart LR
 ```mermaid
 flowchart LR
   router[Express routes] --> usecase[Project and Progress Use Cases]
-  usecase --> repository[PostgreSQL Repository]
+  usecase --> repository[MySQL Repository]
   usecase --> cache[Redis Cache Adapter]
   usecase --> publisher[Rabbit Event Publisher]
   publisher --> handler[Alert Function Handler]
@@ -39,17 +40,18 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  subgraph Docker[Docker Compose / host de desarrollo]
+  subgraph Docker[Docker Compose]
     G[api-gateway]
     P[project-service]
     F[alert-function]
-    DB[(postgres)]
     C[(redis)]
     Q[(rabbitmq)]
+  end
+  subgraph XAMPP[Host Windows / XAMPP]
+    DB[(MySQL / MariaDB)]
   end
   Internet --> G --> P
   P --> DB
   P --> C
   P --> Q --> F --> DB
 ```
-

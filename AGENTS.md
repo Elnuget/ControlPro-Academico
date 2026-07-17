@@ -7,9 +7,11 @@ Proyecto académico de Diseño y Arquitectura de Software. Mantener exactamente 
 ## Arquitectura
 
 - Toda API pública se expone mediante `api-gateway` en el puerto 3000 y se documenta con Swagger.
-- `project-service` es dueño de proyectos y avances; usa PostgreSQL, cache-aside con Redis y publica `progress.recorded`.
+- `api-gateway` firma tokens Bearer de cuatro horas; `project-service` valida contra la tabla MySQL `users`, cuyas contraseñas usan `scrypt`.
+- `project-service` es dueño de proyectos y avances; usa MySQL/MariaDB de XAMPP, cache-aside con Redis y publica `progress.recorded`.
 - `alert-function` consume RabbitMQ y persiste notificaciones de forma idempotente mediante `event_id`.
-- PostgreSQL, Redis y RabbitMQ se ejecutan con Docker Compose.
+- MySQL/MariaDB se ejecuta en XAMPP; las aplicaciones Docker se conectan por `host.docker.internal:3306`. Redis y RabbitMQ se ejecutan con Docker Compose.
+- Antes del primer inicio, ejecutar `infra/mysql/init.sql` con el cliente de MySQL de XAMPP.
 
 ## Verificación obligatoria
 

@@ -30,11 +30,11 @@ Señala **Aplicación 02 — Project Service**.
 
 > Project Service contiene las reglas del negocio. Valida los datos, crea proyectos, registra avances y controla las transacciones. Esta separación permite cambiar la interfaz sin modificar la lógica académica.
 
-### 5. PostgreSQL y Redis — 40 segundos
+### 5. MySQL/XAMPP y Redis — 40 segundos
 
 Señala las dos bases de datos.
 
-> PostgreSQL conserva proyectos, avances y notificaciones de forma consistente. Redis funciona como caché del tablero durante 60 segundos. Cuando cambia un proyecto, la caché se invalida para no presentar información anterior.
+> MySQL/MariaDB de XAMPP conserva proyectos, avances y notificaciones de forma consistente. Redis funciona como caché del tablero durante 60 segundos. Cuando cambia un proyecto, la caché se invalida para no presentar información anterior.
 
 ### 6. RabbitMQ y Alert Function — 50 segundos
 
@@ -46,7 +46,7 @@ Sigue las flechas verdes desde Project Service.
 
 Señala el recuadro inferior.
 
-> Todo se ejecuta con Docker Compose en seis contenedores. Los health checks permiten conocer el estado de las dependencias, los logs JSON ayudan a seguir las solicitudes y GitHub Actions ejecuta pruebas y construye las imágenes en cada publicación.
+> Las tres aplicaciones, Redis y RabbitMQ se ejecutan en cinco contenedores Docker. MySQL/MariaDB se ejecuta con XAMPP en el host y se conecta por `host.docker.internal`. Los health checks, logs JSON y GitHub Actions apoyan la operación.
 
 ### 8. Idea principal — 20 segundos
 
@@ -64,7 +64,7 @@ Señala el recuadro inferior.
 
 ### Pasos 3 y 4 — Transacción
 
-> Project Service valida el porcentaje, abre una transacción y bloquea el proyecto con `FOR UPDATE`. PostgreSQL guarda el historial y el nuevo porcentaje como una sola operación.
+> Project Service valida el porcentaje, abre una transacción y bloquea el proyecto con `FOR UPDATE`. MySQL guarda el historial y el nuevo porcentaje como una sola operación.
 
 ### Paso 5 — Evento
 
@@ -80,14 +80,14 @@ Señala el recuadro inferior.
 
 ## Cierre — 25 segundos
 
-> En conclusión, ControlPro mantiene una experiencia sencilla para el usuario y una arquitectura desacoplada internamente. API Gateway centraliza la entrada, Project Service protege el negocio y Alert Function procesa eventos. PostgreSQL, Redis y RabbitMQ aportan consistencia, rendimiento y resiliencia.
+> En conclusión, ControlPro mantiene una experiencia sencilla para el usuario y una arquitectura desacoplada internamente. API Gateway centraliza y autentica la entrada, Project Service protege el negocio y Alert Function procesa eventos. MySQL, Redis y RabbitMQ aportan consistencia, rendimiento y resiliencia.
 
 ## Preguntas probables
 
 - **¿Por qué existen tres aplicaciones?** Para separar la entrada pública, las reglas del negocio y el procesamiento asíncrono.
 - **¿Por qué usar RabbitMQ?** Para que las alertas no ralenticen el registro del avance y para conservar mensajes durante fallos temporales.
 - **¿Por qué Redis?** Para reducir la latencia de las consultas frecuentes del dashboard.
-- **¿Cómo se evitan alertas duplicadas?** Cada evento tiene un `event_id` único en PostgreSQL.
+- **¿Cómo se evitan alertas duplicadas?** Cada evento tiene un `event_id` único en MySQL.
 - **¿Qué ocurre si Alert Function se detiene?** RabbitMQ conserva el mensaje y puede entregarlo cuando la función vuelva a estar disponible.
 - **¿Cómo se ejecuta?** Con `docker compose up --build -d`; el dashboard se abre en `http://localhost:3000/#proyectos`.
 

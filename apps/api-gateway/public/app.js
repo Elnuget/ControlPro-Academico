@@ -1,4 +1,4 @@
-const state = { projects: [], notifications: [] };
+const state = { projects: [], notifications: [], user: null, token: sessionStorage.getItem('controlpro_token') };
 
 const $ = selector => document.querySelector(selector);
 const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({
@@ -26,11 +26,52 @@ function showToast(message, error = false) {
   showToast.timer = setTimeout(() => toast.className = 'toast', 3000);
 }
 
-async function request(url, options) {
-  const response = await fetch(url, options);
+function authenticationMessage(error) {
+  return ({
+    invalid_credentials: 'El correo o la contraseña no son correctos.',
+    too_many_attempts: 'Demasiados intentos. Espera un minuto y vuelve a probar.',
+    authentication_required: 'Tu sesión venció. Inicia sesión nuevamente.'
+  })[error] || 'No se pudo iniciar sesión. Inténtalo nuevamente.';
+}
+
+async function request(url, options = {}, includeAuth = true) {
+  const headers = new Headers(options.headers || {});
+  if (includeAuth && state.token) headers.set('authorization', `Bearer ${state.token}`);
+  const response = await fetch(url, { ...options, headers });
   const data = await response.json().catch(() => ({}));
+  if (response.status === 401 && url !== '/api/auth/login') showLogin('Tu sesión venció. Inicia sesión nuevamente.');
   if (!response.ok) throw new Error(data.details?.join(', ') || data.error || 'No se pudo completar la operación');
   return data;
+}
+
+function initials(name) {
+  return String(name || 'Usuario').split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase();
+}
+
+function setAuthenticatedSession(payload) {
+  state.token = payload.token || state.token;
+  state.user = payload.user;
+  if (payload.token) sessionStorage.setItem('controlpro_token', payload.token);
+  $('#loginScreen').hidden = true;
+  $('#appShell').hidden = false;
+  $('#sidebarUserName').textContent = state.user.name;
+  $('#topUserName').textContent = state.user.name.split(' ')[0];
+  $('#userInitials').textContent = initials(state.user.name);
+  $('#dropdownUserName').textContent = state.user.name;
+  $('#dropdownUserEmail').textContent = state.user.email;
+  document.querySelector('.topbar h1').textContent = `Hola, ${state.user.name.split(' ')[0]}`;
+}
+
+function showLogin(message = '') {
+  state.token = null;
+  state.user = null;
+  sessionStorage.removeItem('controlpro_token');
+  $('#appShell').hidden = true;
+  $('#loginScreen').hidden = false;
+  $('#userDropdown').hidden = true;
+  const error = $('#loginError');
+  error.textContent = message;
+  error.hidden = !message;
 }
 
 function renderKpis() {
@@ -143,7 +184,7 @@ $('#progressForm').addEventListener('submit', async event => {
       body: JSON.stringify({
         percentage: Number($('#percentage').value),
         evidence: $('#evidence').value,
-        student: 'Carlos Angulo'
+        student: state.user.name
       })
     });
     $('#progressDialog').close();
@@ -161,7 +202,7 @@ $('#projectForm').addEventListener('submit', async event => {
         name: $('#projectName').value,
         subject: $('#projectSubject').value,
         deadline: $('#projectDeadline').value,
-        student: 'Carlos Angulo'
+        student: state.user.name
       })
     });
     $('#projectDialog').close();
@@ -181,5 +222,63 @@ $('#newProjectButton').addEventListener('click', openProjectDialog);
 $('#heroNewProjectButton').addEventListener('click', openProjectDialog);
 $('#refreshButton').addEventListener('click', () => loadDashboard(true));
 
-loadDashboard();
-setInterval(loadDashboard, 15000);
+$('#loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = $('#loginButton');
+  const errorBox = $('#loginError');
+  errorBox.hidden = true;
+  button.disabled = true;
+  button.innerHTML = 'Verificando acceso…';
+  try {
+    const payload = await request('/api/auth/login', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: $('#loginEmail').value.trim(), password: $('#loginPassword').value })
+    }, false);
+    setAuthenticatedSession(payload);
+    $('#loginPassword').value = '';
+    await loadDashboard();
+  } catch (error) {
+    errorBox.textContent = authenticationMessage(error.message);
+    errorBox.hidden = false;
+  } finally {
+    button.disabled = false;
+    button.innerHTML = 'Ingresar a ControlPro <span>→</span>';
+  }
+});
+
+$('#togglePassword').addEventListener('click', event => {
+  const input = $('#loginPassword');
+  const visible = input.type === 'text';
+  input.type = visible ? 'password' : 'text';
+  event.currentTarget.textContent = visible ? 'Ver' : 'Ocultar';
+  event.currentTarget.setAttribute('aria-label', visible ? 'Mostrar contraseña' : 'Ocultar contraseña');
+});
+
+$('#userMenuButton').addEventListener('click', event => {
+  event.stopPropagation();
+  const dropdown = $('#userDropdown');
+  dropdown.hidden = !dropdown.hidden;
+  event.currentTarget.setAttribute('aria-expanded', String(!dropdown.hidden));
+});
+
+$('#logoutButton').addEventListener('click', () => showLogin());
+document.addEventListener('click', event => {
+  if (!event.target.closest('.user-menu')) {
+    $('#userDropdown').hidden = true;
+    $('#userMenuButton').setAttribute('aria-expanded', 'false');
+  }
+});
+
+async function initialize() {
+  if (!state.token) return showLogin();
+  try {
+    const session = await request('/api/auth/me');
+    setAuthenticatedSession(session);
+    await loadDashboard();
+  } catch {
+    showLogin('Tu sesión anterior terminó. Ingresa nuevamente.');
+  }
+}
+
+initialize();
+setInterval(() => { if (state.token) loadDashboard(); }, 15000);

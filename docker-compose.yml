@@ -1,20 +1,4 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-controlpro}
-      POSTGRES_USER: ${POSTGRES_USER:-controlpro}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-controlpro_dev}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-controlpro} -d ${POSTGRES_DB:-controlpro}"]
-      interval: 5s
-      timeout: 3s
-      retries: 15
-    restart: unless-stopped
-
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes
@@ -45,12 +29,14 @@ services:
     build: ./apps/project-service
     environment:
       PORT: 3001
-      DATABASE_URL: postgresql://${POSTGRES_USER:-controlpro}:${POSTGRES_PASSWORD:-controlpro_dev}@postgres:5432/${POSTGRES_DB:-controlpro}
+      DB_HOST: host.docker.internal
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-controlpro}
+      DB_USER: ${MYSQL_USER:-controlpro_app}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-controlpro_dev}
       REDIS_URL: redis://redis:6379
       AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER:-controlpro}:${RABBITMQ_DEFAULT_PASS:-controlpro_dev}@rabbitmq:5672
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
       rabbitmq:
@@ -60,11 +46,13 @@ services:
   alert-function:
     build: ./apps/alert-function
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-controlpro}:${POSTGRES_PASSWORD:-controlpro_dev}@postgres:5432/${POSTGRES_DB:-controlpro}
+      DB_HOST: host.docker.internal
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-controlpro}
+      DB_USER: ${MYSQL_USER:-controlpro_app}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-controlpro_dev}
       AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER:-controlpro}:${RABBITMQ_DEFAULT_PASS:-controlpro_dev}@rabbitmq:5672
     depends_on:
-      postgres:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     restart: unless-stopped
@@ -74,6 +62,7 @@ services:
     environment:
       PORT: 3000
       PROJECT_SERVICE_URL: http://project-service:3001
+      JWT_SECRET: ${JWT_SECRET:-controlpro-local-demo-secret}
     ports:
       - "3000:3000"
     depends_on:
@@ -81,6 +70,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
   redis_data:
-

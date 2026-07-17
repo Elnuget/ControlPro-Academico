@@ -8,6 +8,7 @@ export const openapi = {
   servers: [{ url: 'http://localhost:3000', description: 'Docker local' }],
   tags: [
     { name: 'Sistema' },
+    { name: 'Autenticación' },
     { name: 'Proyectos' },
     { name: 'Avances' },
     { name: 'Alertas' }
@@ -20,13 +21,28 @@ export const openapi = {
         responses: { '200': { description: 'Sistema disponible' }, '503': { description: 'Dependencia no disponible' } }
       }
     },
+    '/api/auth/login': {
+      post: {
+        tags: ['Autenticación'], summary: 'Inicia sesión y entrega un token Bearer',
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Login' } } } },
+        responses: { '200': { description: 'Sesión iniciada' }, '401': { description: 'Credenciales inválidas' }, '429': { description: 'Demasiados intentos' } }
+      }
+    },
+    '/api/auth/me': {
+      get: {
+        tags: ['Autenticación'], summary: 'Consulta la sesión actual', security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Usuario autenticado' }, '401': { description: 'Token ausente o inválido' } }
+      }
+    },
     '/api/projects': {
       get: {
         tags: ['Proyectos'], summary: 'Lista proyectos activos',
+        security: [{ bearerAuth: [] }],
         responses: { '200': { description: 'Listado de proyectos' } }
       },
       post: {
         tags: ['Proyectos'], summary: 'Crea un proyecto académico',
+        security: [{ bearerAuth: [] }],
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/NewProject' } } } },
         responses: { '201': { description: 'Proyecto creado' }, '400': { description: 'Datos inválidos' } }
       }
@@ -34,6 +50,7 @@ export const openapi = {
     '/api/projects/{id}': {
       get: {
         tags: ['Proyectos'], summary: 'Obtiene un proyecto y su historial',
+        security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
         responses: { '200': { description: 'Detalle del proyecto' }, '404': { description: 'No encontrado' } }
       }
@@ -41,6 +58,7 @@ export const openapi = {
     '/api/projects/{id}/progress': {
       post: {
         tags: ['Avances'], summary: 'Registra avance y publica progress.recorded en RabbitMQ',
+        security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/NewProgress' } } } },
         responses: { '201': { description: 'Avance registrado y evento publicado' }, '400': { description: 'Datos inválidos' } }
@@ -49,12 +67,23 @@ export const openapi = {
     '/api/notifications': {
       get: {
         tags: ['Alertas'], summary: 'Lista alertas creadas por la función asíncrona',
+        security: [{ bearerAuth: [] }],
         responses: { '200': { description: 'Listado de alertas' } }
       }
     }
   },
   components: {
+    securitySchemes: {
+      bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
+    },
     schemas: {
+      Login: {
+        type: 'object', required: ['email', 'password'],
+        properties: {
+          email: { type: 'string', format: 'email', example: 'carlos.angulo@udla.edu.ec' },
+          password: { type: 'string', format: 'password', example: 'ControlPro2026!' }
+        }
+      },
       NewProject: {
         type: 'object', required: ['name', 'subject', 'deadline'],
         properties: {
@@ -75,4 +104,3 @@ export const openapi = {
     }
   }
 };
-
